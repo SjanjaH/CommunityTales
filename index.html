@@ -263,6 +263,7 @@ function render(){
     if(sec.notes){
       html+=`<details class="notes"><summary>${sec.notesTitle}</summary><div class="fields">`;
       sec.notes.forEach((n,i)=>{html+=`<label class="f">${esc(n)}<textarea data-field="${sec.id}-n${i}"></textarea></label>`;});
+      html+=`<div><button type="button" class="primary" onclick="saveDoc('${sec.id}')">Зберегти нотатки у .doc за шаблоном</button></div>`;
       html+='</div></details>';
     }
     html+=`<label class="f" style="margin-top:12px">Коментар до розділу<textarea data-field="${sec.id}-comment"></textarea></label></section>`;
@@ -322,6 +323,100 @@ function importData(inp){
 function resetAll(){
   if(!confirm('Очистити всі позначки й нотатки?')) return;
   state={checks:{},fields:{}}; restore(); persist();
+}
+
+/* ---------- Експорт нотаток у .doc за шаблонами додатків ---------- */
+function v(k){return (state.fields[k]||'').trim();}
+function fmtDate(d){if(!d) return ''; const [y,m,dd]=d.split('-'); return `${dd}.${m}.${y}`;}
+function cell(t){return esc(t||'').replace(/\n/g,'<br>');}
+function meta(dateKey){
+  return [v('city'),v('place'),fmtDate(v(dateKey))].filter(Boolean).join(', ');
+}
+function team(){
+  const p=[]; if(v('facilitator')) p.push('Фасилітатор(ка): '+v('facilitator'));
+  if(v('notetaker')) p.push('Нотатки: '+v('notetaker'));
+  if(v('count')) p.push('Учасників: '+v('count'));
+  return p.join('\n');
+}
+
+const DOC_TEMPLATES = {
+  game: {
+    file:'Додаток 3_Сесія-гра',
+    title:'Додаток 3: «Історії громад+» шаблон для ведення нотаток',
+    subtitle:'Сесія-гра: шаблон конспектування настільної/карткової гри',
+    head:'Сесія-гра: настільна гра',
+    rows:()=>[
+      ['Напишіть іншу додаткову інформацію, як-от місце чи час:', [meta('d_game'),team()].filter(Boolean).join('\n')],
+      ['1) Рефлексія після картки 6 (упередження): Які ключові думки, теми або приклади обговорювалися під час обговорення цієї картки?', v('game-n0')],
+      ['2) Рефлексія після картки 7 (потенційні наслідки): Які основні ідеї та міркування були озвучені під час рефлексії? Що було найважливішим для учасників?', v('game-n1')],
+      ['3) Рефлексія після картки 8 (дії): Що саме запропонували учасники як можливі дії? Які ідеї підтримали більшість або викликали інтерес?', v('game-n2')],
+      ['4) Уявний контакт: Що учасники згадували або чим поділилися після виконання вправи уявного контакту (якщо хтось висловлювався)?', v('game-n3')],
+      ['5) Особисті рішення (ви їх зможете надіслати учасникам, як нагадування через тиждень): Які особисті зобов’язання озвучили учасники? Занотуйте їх, зберігаючи анонімність (використовуйте умовне кодування для можливого подальшого контакту).', v('game-n4')],
+      ['6) Спільні рішення (ви їх зможете надіслати учасникам, як нагадування через тиждень): Які спільні рішення або плани дій були сформульовані групою? Що учасники хотіли б втілювати разом?', v('game-n5')],
+      ['7) Фото дошки: Зробіть фотографію ігрового поля, щоб точно зберегти зіграні картки. Якщо це неможливо — запишіть, які саме картки були використані.', v('game-n6')],
+      ['8) Інші нотатки: Будь-які додаткові спостереження, коментарі або важливі моменти, що виникли під час заняття.', v('game-n7')]
+    ],
+    footnote:'Якщо у шаблоні для нотаток недостатньо місця, скористайтеся окремим аркушем і вкажіть посилання на відповідний розділ (наприклад: З2, №2 — заняття 2, пункт 2, рефлексія після картки 7).'
+  },
+  f1: {
+    file:'Додаток 3_Сесія подальших дій 1',
+    title:'Сесія подальших дій 1: шаблон конспектування заняття рефлексії',
+    head:'Сесія подальших дій 1: заняття рефлексії',
+    rows:()=>[
+      ['Місто та місце, дата', [meta('d_f1'),team()].filter(Boolean).join('\n')],
+      ['Рефлексія. Примітка: основні моменти/вивчення сесії подальших дій 1 будуть підсумовані фасилітатором на сесії подальших дій 2!', ''],
+      ['Обмін досягненнями: Які метафоричні картки обрали учасники? Які ключові думки та досвід вони озвучили під час обміну?', v('f1-n0')],
+      ['Рефлексія щодо особистих рішень: Що саме учасники розповіли про впровадження своїх особистих рішень? Які моменти були найважливішими або найемоційнішими? Що пройшло добре?', v('f1-n1')],
+      ['Основні виклики, з якими зіштовхнулися', v('f1-n2')],
+      ['Чим з їхнього досвіду можуть скористатися інші?', v('f1-n3')],
+      ['Де учасники потребують підтримки?', v('f1-n4')],
+      ['Додаткові коментарі/думки учасників?', v('f1-comment')],
+      ['Рефлексія щодо колективних рішень: які думки були висловлені щодо спільних дій? Що вдалося реалізувати разом і які виклики обговорювались? (А. Що пройшло добре? B. Основні виклики)', v('f1-n5')],
+      ['Позитивні/підтримувальні відгуки: Які обнадійливі або надихаючі реакції пролунали від учасників під час заняття?', v('f1-n6')],
+      ['Власні спостереження фасилітаторів', v('f1-n7')]
+    ]
+  },
+  f2: {
+    file:'Сесія подальших дій 2_нотатки',
+    title:'Сесія подальших дій 2: шаблон нотаток',
+    head:'Сесія подальших дій 2',
+    rows:()=>[
+      ['Місто та місце, дата', [meta('d_f2'),team()].filter(Boolean).join('\n')],
+      ['Підсумок сесії подальших дій 1, озвучений фасилітатором', v('f2-n0')],
+      ['Прогрес в особистих рішеннях: що вдалося, які виклики?', v('f2-n1')],
+      ['Прогрес у спільних рішеннях: що вдалося реалізувати разом, які виклики?', v('f2-n2')],
+      ['Інші нотатки та власні спостереження фасилітаторів', [v('f2-n3'),v('f2-comment')].filter(Boolean).join('\n')]
+    ]
+  }
+};
+
+function saveDoc(id){
+  const t=DOC_TEMPLATES[id]; if(!t) return;
+  const rows=t.rows().map(r=>`<tr><td class="q">${cell(r[0])}</td><td class="a">${cell(r[1])||'&nbsp;'}</td></tr>`).join('');
+  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>${esc(t.title)}</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>
+@page{size:21cm 29.7cm;margin:2cm 1.8cm 2cm 2cm}
+body{font-family:Arial,sans-serif;font-size:11pt;color:#000}
+h1{font-size:15pt;margin:0 0 6pt}
+h2{font-size:12.5pt;margin:0 0 10pt;color:#028784}
+table{border-collapse:collapse;width:100%}
+td,th{border:1pt solid #555;padding:6pt 8pt;vertical-align:top;font-size:10.5pt}
+th{background:#e6f7f6;text-align:center;font-weight:bold}
+td.q{width:42%;font-weight:bold;background:#f5f8f8}
+td.a{width:58%}
+p.fn{font-size:9pt;color:#444;margin-top:10pt}
+</style></head><body>
+<h1>${esc(t.title)}</h1>${t.subtitle?`<h2>${esc(t.subtitle)}</h2>`:''}
+<table><tr><th colspan="2">${esc(t.head)}</th></tr>${rows}</table>
+${t.footnote?`<p class="fn">¹ ${esc(t.footnote)}</p>`:''}
+</body></html>`;
+  const blob=new Blob(['\ufeff',html],{type:'application/msword'});
+  const city=v('city')?'_'+v('city').replace(/[^\wа-яіїєґ'-]+/gi,'_'):'';
+  const u=URL.createObjectURL(blob); const l=document.createElement('a');
+  l.href=u; l.download=`${t.file}${city}.doc`; document.body.appendChild(l); l.click(); l.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),1000);
 }
 
 render(); restore();
