@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Чек-лист «Історії громад+»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700;800&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#02b9b5; --teal-dark:#028784; --orange:#f18602;
+  --bg:#f5f8f8; --card:#ffffff; --ink:#1d2b2b; --muted:#5f6e6e; --line:#dde7e7;
+  --done:#9aa8a8; --soft:#e6f7f6;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#121a1a;--card:#1b2626;--ink:#e8f0f0;--muted:#9fb0b0;--line:#2c3b3b;--done:#6f8080;--soft:#1f3433;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Raleway,system-ui,sans-serif;font-size:16px;line-height:1.5}
+a{color:var(--teal-dark);font-weight:600;text-decoration:none;border-bottom:1px solid currentColor}
+@media (prefers-color-scheme: dark){a{color:var(--teal)}}
+a:hover{color:var(--orange)}
+h1,h2,h3{font-family:"Exo 2",sans-serif;margin:0}
+.wrap{max-width:920px;margin:0 auto;padding:24px 16px 80px}
+header.top{background:linear-gradient(120deg,var(--teal),var(--teal-dark));color:#fff;border-radius:18px;padding:24px;position:relative;overflow:hidden}
+header.top h1{font-size:clamp(22px,4vw,32px);font-weight:800}
+header.top p{margin:6px 0 0;opacity:.92}
+header.top a{color:#fff}
+.progress{margin-top:16px;background:rgba(255,255,255,.25);border-radius:99px;height:12px;overflow:hidden}
+.progress span{display:block;height:100%;background:var(--orange);width:0;transition:width .4s}
+.ptext{margin-top:6px;font-weight:600;font-size:14px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+button{font-family:inherit;font-weight:600;font-size:14px;border:1.5px solid var(--teal);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--orange)}
+button.primary{background:var(--teal);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0}
+.card h2{font-size:21px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.badge{font-family:Raleway;font-size:13px;font-weight:700;background:var(--soft);color:var(--teal-dark);border-radius:99px;padding:2px 10px}
+.badge.full{background:var(--orange);color:#fff}
+.lead{color:var(--muted);margin:8px 0 0}
+h3{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--orange);margin:18px 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+label.f{display:flex;flex-direction:column;font-size:13px;font-weight:600;color:var(--muted);gap:4px}
+input[type=text],input[type=date],textarea{font-family:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;width:100%}
+textarea{min-height:64px;resize:vertical}
+input:focus,textarea:focus{outline:2px solid var(--teal);border-color:transparent}
+ul.check{list-style:none;padding:0;margin:0}
+ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 4px;border-bottom:1px dashed var(--line)}
+ul.check li:last-child{border-bottom:0}
+ul.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--teal);flex:none;cursor:pointer}
+ul.check label{cursor:pointer}
+ul.check li.done label{color:var(--done);text-decoration:line-through}
+ul.check li.done label a{color:var(--done)}
+.tablewrap{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:"Exo 2";color:var(--teal-dark);font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+@media (prefers-color-scheme: dark){th{color:var(--teal)}}
+.notes{margin-top:14px}
+.notes summary{cursor:pointer;font-weight:700;color:var(--teal-dark)}
+@media (prefers-color-scheme: dark){.notes summary{color:var(--teal)}}
+.notes .fields{display:grid;gap:10px;margin-top:10px}
+.saved{font-size:13px;color:var(--muted);align-self:center}
+#bird{position:fixed;bottom:18px;left:-80px;font-size:40px;transition:left 3.5s linear;pointer-events:none;z-index:9}
+#bird.fly{left:110vw}
+@media print{
+  .toolbar,#bird{display:none}
+  body{background:#fff}
+  .card{break-inside:avoid;border-color:#ccc}
+  details.notes{display:block}
+  details.notes > *{display:block}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Чек-лист «Історії громад+»</h1>
+    <p>Підготовка та проведення: сесія-гра → нагадування через тиждень → сесії подальших дій 1 і 2. Усі файли — у <a href="https://drive.google.com/drive/folders/1YeOs4VqggepWhPKcePBt128ha7fCe_9V" target="_blank" rel="noopener">спільній папці</a>.</p>
+    <div class="progress"><span id="bar"></span></div>
+    <div class="ptext" id="ptext">0 з 0 виконано</div>
+  </header>
+
+  <div class="toolbar">
+    <button class="primary" onclick="window.print()">Друк / PDF</button>
+    <button onclick="exportData()">Зберегти у файл</button>
+    <button onclick="document.getElementById('imp').click()">Завантажити з файлу</button>
+    <input type="file" id="imp" accept="application/json" hidden onchange="importData(this)">
+    <button onclick="resetAll()">Очистити все</button>
+    <span class="saved" id="saved">Зміни зберігаються автоматично в цьому браузері</span>
+  </div>
+
+  <section class="card">
+    <h2>Дані події</h2>
+    <div class="grid">
+      <label class="f">Місто / громада<input type="text" data-field="city"></label>
+      <label class="f">Місце проведення<input type="text" data-field="place"></label>
+      <label class="f">Фасилітатор(ка)<input type="text" data-field="facilitator"></label>
+      <label class="f">Хто веде нотатки<input type="text" data-field="notetaker"></label>
+      <label class="f">Сесія-гра<input type="date" data-field="d_game"></label>
+      <label class="f">Сесія подальших дій 1<input type="date" data-field="d_f1"></label>
+      <label class="f">Сесія подальших дій 2<input type="date" data-field="d_f2"></label>
+      <label class="f">Кількість учасників<input type="text" data-field="count"></label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Документи та посилання</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Документ</th><th>Для чого</th><th>Коли потрібен</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://drive.google.com/file/d/1QHkpJuET1tgmyxv55A16eoLq0i7DHx5N/view?usp=drivesdk" target="_blank" rel="noopener">Форма згоди для повнолітніх</a></td><td>Згода на фото-, відеозйомку та інтервʼю (внутрішнє / зовнішнє використання), AFEW-Україна</td><td>Друк до події, підпис на початку</td></tr>
+        <tr><td><a href="https://drive.google.com/file/d/1ozB03CummuzV0BuFTRh1EGTpboaYPoaq/view?usp=drivesdk" target="_blank" rel="noopener">Дисклеймер</a></td><td>Логотипи War Child, Sida, AFEW для матеріалів</td><td>Підготовка слайдів і роздатки</td></tr>
+        <tr><td><a href="https://drive.google.com/file/d/1mh5T5hltUURqhMUNPu95xNMffVICjgAn/view?usp=drivesdk" target="_blank" rel="noopener">Шпаргалка сесії-гри</a></td><td>Сценарій гри: розігрів, картки 1–10, питання R1–R3</td><td>Сесія-гра</td></tr>
+        <tr><td><a href="https://drive.google.com/file/d/1n3jhAQkDUAEPqyRlxGy6gRo-KDJbWj25/view?usp=drivesdk" target="_blank" rel="noopener">Додаток 3: Сесія-гра</a></td><td>Шаблон нотаток для фасилітатора (8 пунктів)</td><td>Сесія-гра</td></tr>
+        <tr><td><a href="https://drive.google.com/file/d/1hAPNwMSmxVpEBVomB0shk2UrtNMGlyu3/view?usp=drivesdk" target="_blank" rel="noopener">Додаток 3: Сесія подальших дій 1</a></td><td>Шаблон конспекту заняття рефлексії</td><td>Сесія подальших дій 1</td></tr>
+        <tr><td><a href="https://drive.google.com/file/d/16XSEja8jAhsvkb1nY_iDqK6J8OjvmcJD/view?usp=drivesdk" target="_blank" rel="noopener">Додаток 4: форма моніторингу</a></td><td>Опис питань трекера рішень (PSYCHLOPS)</td><td>Сесії подальших дій 1 і 2</td></tr>
+        <tr><td><a href="https://ee.kobotoolbox.org/x/Db10WvJ6" target="_blank" rel="noopener">КОБО-форма Resolution Progress Tracker</a></td><td>Індивідуальне заповнення учасниками (етап 0)</td><td>Сесії подальших дій 1 і 2</td></tr>
+        <tr><td><a href="https://drive.google.com/file/d/1NWoDsE87wTs2JHXppqFVD-dpB7XxGSEN/view?usp=drivesdk" target="_blank" rel="noopener">Додаток 5: Метафоричні карти</a></td><td>20 карт («Острів натхнення» … «Вогник сили»)</td><td>Сесія подальших дій 1</td></tr>
+        <tr><td><a href="https://drive.google.com/file/d/16QXUzBKETDOM621FLD0mRA8R8ZgNipLO/view?usp=drivesdk" target="_blank" rel="noopener">Шаблон сертифікату</a> · <a href="https://canva.link/1z1s1cg2vftrked" target="_blank" rel="noopener">дизайн у Canva</a></td><td>Сертифікати учасників</td><td>Після завершення циклу</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <div id="sections"></div>
+</div>
+<div id="bird" aria-hidden="true">🐦</div>
+
+<script>
+const L = {
+  folder:'https://drive.google.com/drive/folders/1YeOs4VqggepWhPKcePBt128ha7fCe_9V',
+  consent:'https://drive.google.com/file/d/1QHkpJuET1tgmyxv55A16eoLq0i7DHx5N/view?usp=drivesdk',
+  disclaimer:'https://drive.google.com/file/d/1ozB03CummuzV0BuFTRh1EGTpboaYPoaq/view?usp=drivesdk',
+  cheat:'https://drive.google.com/file/d/1mh5T5hltUURqhMUNPu95xNMffVICjgAn/view?usp=drivesdk',
+  gameNotes:'https://drive.google.com/file/d/1n3jhAQkDUAEPqyRlxGy6gRo-KDJbWj25/view?usp=drivesdk',
+  f1Notes:'https://drive.google.com/file/d/1hAPNwMSmxVpEBVomB0shk2UrtNMGlyu3/view?usp=drivesdk',
+  monitor:'https://drive.google.com/file/d/16XSEja8jAhsvkb1nY_iDqK6J8OjvmcJD/view?usp=drivesdk',
+  kobo:'https://ee.kobotoolbox.org/x/Db10WvJ6',
+  cards:'https://drive.google.com/file/d/1NWoDsE87wTs2JHXppqFVD-dpB7XxGSEN/view?usp=drivesdk',
+  certDoc:'https://drive.google.com/file/d/16QXUzBKETDOM621FLD0mRA8R8ZgNipLO/view?usp=drivesdk',
+  canva:'https://canva.link/1z1s1cg2vftrked'
+};
+const a = (k,t) => `<a href="${L[k]}" target="_blank" rel="noopener">${t}</a>`;
+
+const SECTIONS = [
+ {id:'prep', title:'1. Підготовка до сесії-гри', groups:[
+  ['Документи',[
+   `Роздрукувати ${a('consent','форми згоди')} — по одній на учасника + запас`,
+   `Додати логотипи з ${a('disclaimer','дисклеймера')} (War Child, Sida, AFEW) на слайди та роздатку`,
+   `Роздрукувати ${a('cheat','шпаргалку гри')} для фасилітатора`,
+   `Роздрукувати ${a('gameNotes','шаблон нотаток сесії-гри')} + чисті аркуші для додаткових нотаток`,
+   `Підготувати роздатку для особистих роздумів учасників (5 хв письма після розігріву)`]],
+  ['Матеріали',[
+   `Комплект настільної гри: ігрове поле та картки всіх типів (результат, головний герой, місце дії, хто/зустріч, дискримінація, упередження, наслідки, дії)`,
+   `Посудина (коробка/миска), стікери або аркуші для вправи з ідентичностями`,
+   `Ручки для всіх учасників`,
+   `Телефон/камера для фото ігрового поля`]],
+  ['Логістика',[
+   `Приміщення, де всі можуть сісти в коло, і стіл під ігрове поле`,
+   `Зафіксувати місто, місце, дату і час (потрібні для шапки шаблонів)`,
+   `Запланувати дати сесій подальших дій 1 і 2 та повідомити учасників`,
+   `Розподілити ролі: хто фасилітує, хто веде нотатки`]]
+ ]},
+ {id:'game', title:'2. Проведення сесії-гри',
+  lead:`Сценарій — у ${a('cheat','шпаргалці')}, нотатки — у ${a('gameNotes','Додатку 3: Сесія-гра')}. Гра не має правильних відповідей — це варто проголосити на старті.`,
+  groups:[
+  ['Старт',[
+   `Зібрати підписані форми згоди (позначки «внутрішнє» / «зовнішнє» використання)`,
+   `Заповнити шапку шаблону нотаток: місце, час`,
+   `Нагадати: тут немає правильних чи неправильних відповідей, підтримуємо одне одного`]],
+  ['Розігрів «Посудина ідентичностей»',[
+   `Усі в колі; кожен (і фасилітатор) пише одну ідентичність, кидає в посудину`,
+   `Фасилітатор зачитує по черзі: святкуємо, якщо впізнаємо себе, дякуємо — якщо ні`,
+   `Остання: «Я прагну бути добрим і підтримуючим (професія)»`,
+   `Обговорити: якими ідентичностями ділилися, якими ні і чому`,
+   `5 хв особистих роздумів у роздатку`]],
+  ['Гра: будуємо сценарій',[
+   `Картка 1 — результат: «Як кожен із нас уявляє своїх дітей?»`,
+   `Картка 2 — головний герой: імʼя і характеристика (з 5 варіантів)`,
+   `Картки 3–5 — місце дії, хто/зустріч, дискримінація`,
+   `Картка 6 — упередження → <b>рефлексія R1</b> → занотувати (шаблон, п. 1)`,
+   `Картка 7 — наслідки → <b>рефлексія R2</b> → занотувати (п. 2)`,
+   `Картка 8 — дії → <b>рефлексія R3</b> → занотувати (п. 3); привітати з досягненням результату`]],
+  ['Завершення',[
+   `Елемент 9 — уявний контакт: 3–5 хв у тиші, записати позитивні моменти, поділитися → занотувати (п. 4)`,
+   `Елемент 10 — особисті рішення: записати анонімно, з умовним кодуванням учасників (п. 5)`,
+   `Спільні рішення групи — записати (п. 6)`,
+   `Сфотографувати ігрове поле зі зіграними картками; якщо не виходить — записати картки (п. 7)`,
+   `Додаткові спостереження (п. 8); позначити окремі аркуші форматом «З2, №2»`,
+   `Підтвердити учасникам дату сесії подальших дій 1 і спосіб нагадування`]]
+  ],
+  notes:['1) Рефлексія після картки 6 (упередження)','2) Рефлексія після картки 7 (наслідки)','3) Рефлексія після картки 8 (дії)','4) Уявний контакт','5) Особисті рішення (анонімно, з кодами)','6) Спільні рішення','7) Зіграні картки / фото поля','8) Інші нотатки'],
+  notesTitle:'Нотатки сесії-гри (за Додатком 3)'
+ },
+ {id:'between', title:'3. Між сесіями (через тиждень)', groups:[
+  [null,[
+   `Перенести рукописні нотатки сесії-гри в ${a('gameNotes','Додаток 3')} та додати фото ігрового поля`,
+   `Надіслати учасникам нагадування про їхні особисті та спільні рішення (п. 5–6 шаблону)`,
+   `Нагадати дату, час і місце сесії подальших дій 1`,
+   `Перевірити, що ${a('kobo','КОБО-форма')} відкривається з телефона`]]
+ ]},
+ {id:'f1', title:'4. Сесія подальших дій 1 (рефлексія)', groups:[
+  ['Підготовка',[
+   `Роздрукувати і розрізати 20 ${a('cards','метафоричних карт')}`,
+   `Роздрукувати ${a('f1Notes','шаблон конспекту сесії подальших дій 1')}`,
+   `Мати під рукою особисті та спільні рішення з сесії-гри`,
+   `Підготувати QR-код або посилання на ${a('kobo','КОБО-форму')} (питання — у ${a('monitor','Додатку 4')})`]],
+  ['Під час сесії',[
+   `Етап 0: кожен учасник індивідуально заповнює КОБО-форму (до 2 особистих + 1 спільне рішення, прогрес за шкалою 1–10)`,
+   `Обмін досягненнями через метафоричні карти: записати, яку карту обрав кожен і чому`,
+   `Рефлексія щодо особистих рішень: що вдалося, виклики, чим можуть скористатися інші, де потрібна підтримка`,
+   `Рефлексія щодо спільних рішень: що вдалося разом, основні виклики`,
+   `Зафіксувати підтримувальні відгуки учасників`]],
+  ['Після сесії',[
+   `Дописати власні спостереження фасилітаторів у конспект`,
+   `Підготувати короткий підсумок — його озвучують на сесії подальших дій 2`,
+   `Перевірити, що всі учасники надіслали КОБО-форму`]]
+  ],
+  notes:['Обрані метафоричні карти (хто яку і з яким змістом)','Особисті рішення: що пройшло добре','Основні виклики','Чим з їхнього досвіду можуть скористатися інші','Де учасники потребують підтримки','Спільні рішення: що пройшло добре / виклики','Позитивні та підтримувальні відгуки','Власні спостереження фасилітаторів'],
+  notesTitle:'Конспект сесії подальших дій 1 (за Додатком 3)'
+ },
+ {id:'f2', title:'5. Сесія подальших дій 2',
+  lead:'Окремого шаблону для цієї сесії в папці немає; пункти нижче спираються на Додатки 3 і 4.',
+  groups:[
+  [null,[
+   `Підготувати QR-код або посилання на ${a('kobo','КОБО-форму')}`,
+   `Етап 0: учасники повторно заповнюють КОБО-форму індивідуально`,
+   `Фасилітатор підсумовує головне з сесії подальших дій 1 (з ${a('f1Notes','конспекту')})`,
+   `Обговорити прогрес в особистих і спільних рішеннях, занотувати`,
+   `Вручити або анонсувати сертифікати`]]
+  ],
+  notes:['Підсумок сесії подальших дій 1, озвучений групі','Прогрес в особистих рішеннях','Прогрес у спільних рішеннях','Інші нотатки'],
+  notesTitle:'Нотатки сесії подальших дій 2'
+ },
+ {id:'after', title:'6. Після завершення циклу', groups:[
+  [null,[
+   `Заповнити імена в ${a('canva','шаблоні сертифіката в Canva')} і експортувати PDF (${a('certDoc','файл із посиланням')})`,
+   `Перевірити, чи заповнені всі три шаблони нотаток і додані фото ігрового поля`,
+   `Вивантажити відповіді КОБО-форми за обидві сесії подальших дій`,
+   `Звірити фото та відео з ${a('consent','формами згоди')}: публічно — лише тих, хто дав згоду на зовнішнє використання`,
+   `Передати оригінали форм згоди, конспекти та фото в AFEW-Україна для звітності й архіву`]]
+ ]}
+];
+
+const KEY='istorii-hromad-checklist-v1';
+let state={checks:{},fields:{}};
+try{const s=localStorage.getItem(KEY); if(s) state=Object.assign(state,JSON.parse(s));}catch(e){}
+
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function render(){
+  const root=document.getElementById('sections'); let html='';
+  SECTIONS.forEach(sec=>{
+    html+=`<section class="card" id="${sec.id}"><h2>${sec.title} <span class="badge" data-badge="${sec.id}"></span></h2>`;
+    if(sec.lead) html+=`<p class="lead">${sec.lead}</p>`;
+    sec.groups.forEach((g,gi)=>{
+      if(g[0]) html+=`<h3>${g[0]}</h3>`;
+      html+='<ul class="check">';
+      g[1].forEach((t,ti)=>{const id=`${sec.id}-${gi}-${ti}`;
+        html+=`<li><input type="checkbox" id="${id}" data-sec="${sec.id}"><label for="${id}">${t}</label></li>`;});
+      html+='</ul>';
+    });
+    if(sec.notes){
+      html+=`<details class="notes"><summary>${sec.notesTitle}</summary><div class="fields">`;
+      sec.notes.forEach((n,i)=>{html+=`<label class="f">${esc(n)}<textarea data-field="${sec.id}-n${i}"></textarea></label>`;});
+      html+='</div></details>';
+    }
+    html+=`<label class="f" style="margin-top:12px">Коментар до розділу<textarea data-field="${sec.id}-comment"></textarea></label></section>`;
+  });
+  root.innerHTML=html;
+  // links inside labels shouldn't toggle checkbox
+  root.querySelectorAll('ul.check a').forEach(el=>el.addEventListener('click',e=>e.stopPropagation()));
+}
+
+function restore(){
+  document.querySelectorAll('ul.check input').forEach(cb=>{cb.checked=!!state.checks[cb.id]; cb.closest('li').classList.toggle('done',cb.checked);});
+  document.querySelectorAll('[data-field]').forEach(el=>{el.value=state.fields[el.dataset.field]||'';});
+  update(false);
+}
+
+let flown=false;
+function update(save=true){
+  const all=[...document.querySelectorAll('ul.check input')];
+  const done=all.filter(c=>c.checked).length;
+  document.getElementById('bar').style.width=(all.length?done/all.length*100:0)+'%';
+  document.getElementById('ptext').textContent=`${done} з ${all.length} виконано`;
+  SECTIONS.forEach(sec=>{
+    const cbs=all.filter(c=>c.dataset.sec===sec.id), d=cbs.filter(c=>c.checked).length;
+    const b=document.querySelector(`[data-badge="${sec.id}"]`);
+    b.textContent=`${d}/${cbs.length}`; b.classList.toggle('full',d===cbs.length);
+  });
+  if(done===all.length && all.length && !flown){flown=true;const bird=document.getElementById('bird');bird.classList.add('fly');setTimeout(()=>{bird.style.transition='none';bird.classList.remove('fly');setTimeout(()=>bird.style.transition='',50);},3800);}
+  if(done<all.length) flown=false;
+  if(save) persist();
+}
+
+function persist(){
+  try{localStorage.setItem(KEY,JSON.stringify(state));
+    document.getElementById('saved').textContent='Збережено ✓ '+new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){document.getElementById('saved').textContent='Автозбереження недоступне — скористайтеся «Зберегти у файл»';}
+}
+
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.matches('ul.check input')){state.checks[t.id]=t.checked; t.closest('li').classList.toggle('done',t.checked); update();}
+});
+document.addEventListener('input',e=>{
+  const t=e.target; if(t.dataset && t.dataset.field){state.fields[t.dataset.field]=t.value; persist();}
+});
+
+function exportData(){
+  const name=(state.fields.city||'podiia').replace(/[^\wа-яіїєґ-]+/gi,'_');
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const u=URL.createObjectURL(blob); const l=document.createElement('a');
+  l.href=u; l.download=`chek-lyst_${name}.json`; l.click(); URL.revokeObjectURL(u);
+}
+function importData(inp){
+  const f=inp.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{try{state=Object.assign({checks:{},fields:{}},JSON.parse(r.result)); restore(); persist();}catch(e){alert('Не вдалося прочитати файл');}};
+  r.readAsText(f); inp.value='';
+}
+function resetAll(){
+  if(!confirm('Очистити всі позначки й нотатки?')) return;
+  state={checks:{},fields:{}}; restore(); persist();
+}
+
+render(); restore();
+</script>
+</body>
+</html>
